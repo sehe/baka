@@ -92,7 +92,7 @@ Owns a file descriptor.
 Class ``null_stream``
 ---------------------
 
-``null_stream``\ s meets the requirements of ``ReadableStream`` and
+``null_stream`` meets the requirements of ``ReadableStream`` and
 ``WritableStream``.
 
 Enum Class ``operation``
