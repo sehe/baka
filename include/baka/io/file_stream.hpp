@@ -1,5 +1,8 @@
 #pragma once
+#include <baka/io/io_error.hpp>
 #include <baka/variadic.hpp>
+#include <cerrno>
+#include <system_error>
 #include <type_traits>
 #include <unistd.h>
 #include <utility>
@@ -16,7 +19,7 @@ namespace baka {
                     auto& fd = static_cast<Self*>(this)->fd;
                     auto n = ::read(fd.native_handle(), begin, end - begin);
                     if (n == -1) {
-                        throw "fuck";
+                        throw io_error(std::make_error_code(static_cast<std::errc>(errno)));
                     }
                     return begin + n;
                 }
@@ -29,7 +32,7 @@ namespace baka {
                     auto& fd = static_cast<Self*>(this)->fd;
                     auto n = ::write(fd.native_handle(), begin, end - begin);
                     if (n == -1) {
-                        throw "fuck";
+                        throw io_error(std::make_error_code(static_cast<std::errc>(errno)));
                     }
                     return begin + n;
                 }
