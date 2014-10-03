@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <baka/variadic.hpp>
 #include <cstddef>
 #include <ffi.h>
 #include <functional>
@@ -9,19 +10,6 @@
 
 namespace baka {
     namespace detail {
-        template<std::size_t N, typename... Ts>
-        struct nth_type;
-
-        template<typename T, typename... Ts>
-        struct nth_type<0, T, Ts...> {
-            using type = T;
-        };
-
-        template<std::size_t N, typename T, typename... Ts>
-        struct nth_type<N, T, Ts...> {
-            using type = typename nth_type<N - 1, Ts...>::type;
-        };
-
         template<typename T>
         ffi_type* type();
 
@@ -63,7 +51,7 @@ namespace baka {
         template<std::size_t N, typename... CallArgs>
         typename std::enable_if<N != sizeof...(Args)>::type
         call_(Ret* ret, void** args, CallArgs&&... call_args) {
-            call_<N + 1>(ret, args, std::forward<CallArgs>(call_args)..., *static_cast<typename detail::nth_type<N, Args...>::type*>(args[N]));
+            call_<N + 1>(ret, args, std::forward<CallArgs>(call_args)..., *static_cast<NthType<N, Args...>*>(args[N]));
         }
 
         template<std::size_t N, typename... CallArgs>
