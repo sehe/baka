@@ -1,4 +1,5 @@
 #pragma once
+#include <stdexcept>
 #include <unistd.h>
 
 namespace baka {
@@ -27,6 +28,9 @@ namespace baka {
             }
 
             native_handle_type native_handle() {
+                if (fd == -1) {
+                    throw std::logic_error("attempt to acquire native handle of moved-from file descriptor");
+                }
                 return fd;
             }
 
