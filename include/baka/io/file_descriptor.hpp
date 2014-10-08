@@ -22,7 +22,7 @@ namespace baka {
 
             ~unique_fd() {
                 if (fd != -1) {
-                    close(fd);
+                    ::close(fd);
                 }
             }
 
