@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <ffi.h>
 #include <functional>
+#include <memory>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -15,7 +16,7 @@ namespace baka {
 
         template<>
         ffi_type* type<int>() {
-            return &ffi_type_sint;
+            return &::ffi_type_sint;
         }
     }
 
@@ -29,13 +30,14 @@ namespace baka {
     public:
         template<typename F>
         explicit bound_function(F&& function_)
-            : function(std::forward<F>(function_)) {
+            : function(std::forward<F>(function_))
+            , closure(nullptr, &::ffi_closure_free) {
             return_type = detail::type<Ret>();
             argument_types = { detail::type<Args>()... };
-            ffi_prep_cif(&cif, FFI_DEFAULT_ABI, argument_types.size(), return_type, argument_types.data());
+            ::ffi_prep_cif(&cif, FFI_DEFAULT_ABI, argument_types.size(), return_type, argument_types.data());
 
-            closure = ffi_closure_alloc(sizeof(ffi_closure), &thunk);
-            ffi_prep_closure_loc(static_cast<ffi_closure*>(closure), &cif, &call, this, reinterpret_cast<void*>(thunk));
+            closure.reset(static_cast<::ffi_closure*>(::ffi_closure_alloc(sizeof(::ffi_closure), &thunk)));
+            ::ffi_prep_closure_loc(closure.get(), &cif, &call, this, reinterpret_cast<void*>(thunk));
         }
 
         operator fptr_t() const {
@@ -61,10 +63,10 @@ namespace baka {
         }
 
         std::function<Ret(Args...)> function;
-        ffi_cif cif;
-        ffi_type* return_type;
-        std::vector<ffi_type*> argument_types;
-        void* closure;
-        void* thunk;
+        ::ffi_cif cif;
+        ::ffi_type* return_type;
+        std::vector<::ffi_type*> argument_types;
+        std::unique_ptr<::ffi_closure, decltype(&::ffi_closure_free)> closure;
+        void* thunk; // freed by ::ffi_closure_free
     };
 }
