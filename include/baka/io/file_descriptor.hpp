@@ -1,9 +1,13 @@
 #pragma once
+#include <baka/exception.hpp>
+#include <baka/io/io_error.hpp>
 #include <stdexcept>
 #include <unistd.h>
 
 namespace baka {
     namespace io {
+        BAKA_EXCEPTION(bad_fd, std::logic_error);
+
         class unique_fd {
         public:
             using native_handle_type = int;
@@ -29,7 +33,7 @@ namespace baka {
 
             native_handle_type native_handle() {
                 if (fd == -1) {
-                    throw std::logic_error("attempt to acquire native handle of moved-from file descriptor");
+                    throw bad_fd("attempt to acquire native handle of moved-from file descriptor");
                 }
                 return fd;
             }
