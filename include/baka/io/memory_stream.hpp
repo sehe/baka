@@ -1,4 +1,5 @@
 #pragma once
+#include <baka/io/io_error.hpp>
 #include <cstddef>
 #include <stdexcept>
 #include <vector>
@@ -23,6 +24,9 @@ namespace baka {
             }
 
             char* read(char* begin, char* end) {
+                if (offset == data.size()) {
+                    throw eof_error("eof");
+                }
                 while (begin != end) {
                     if (data.size() == offset) {
                         return begin;

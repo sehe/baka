@@ -1,4 +1,6 @@
 #pragma once
+#include <baka/io/io_error.hpp>
+#include <stdexcept>
 
 namespace baka {
     namespace io {

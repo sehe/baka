@@ -3,5 +3,8 @@
 #include <system_error>
 
 namespace baka {
-    BAKA_EXCEPTION(io_error, std::system_error);
+    namespace io {
+        BAKA_EXCEPTION(io_error, std::system_error);
+        BAKA_EXCEPTION(eof_error, std::runtime_error);
+    }
 }
