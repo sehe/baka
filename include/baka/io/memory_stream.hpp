@@ -45,6 +45,10 @@ namespace baka {
                 offset = offset_;
             }
 
+            std::size_t tell() const {
+                return offset;
+            }
+
         private:
             std::vector<char> data;
             std::size_t offset;
